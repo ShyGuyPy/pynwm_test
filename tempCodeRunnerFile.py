@@ -1,0 +1,1 @@
+nc = Dataset(destination_file, 'r', Format= 'NETCDF4')
