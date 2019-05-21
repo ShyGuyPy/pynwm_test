@@ -27,13 +27,83 @@ file_name = 'nwm.t00z.short_range.channel_rt.f001.conus.nc'
 
 importDir = "C:/Users/Public/Documents/Python Scripts/file_destination"  # open(destination + file_name + extension, "wb")
 
+
+
+
+
+#Use requests to get page content and BeautifulSoup to parse the result.
+#For example if we search for all iso files at http://cdimage.debian.org/debian-cd/8.2.0-live/i386/iso-hybrid/:
+
+from bs4 import BeautifulSoup
+import requests
+import wget
+from datetime import datetime
+
+date_today = datetime.today().strftime('%Y%m%d')
+
+site_path = 'https://www.ftp.ncep.noaa.gov/data/nccf/com/nwm/prod/nwm.'
+
+
+data_range = '/short_range/'
+
+file = 'nwm.t00z.short_range.channel_rt.f001.conus.nc'
+
+url = site_path+date_today+data_range
+
+ext = 'nc'
+
+def listFD(url, ext=''):
+    page = requests.get(url).text
+    #print page
+    soup = BeautifulSoup(page, 'html.parser')
+    return [url + '/' + node.get('href') for node in soup.find_all('a') if node.get('href').endswith(ext)]
+
+test_list = []
+
+for file in listFD(url, ext):
+    if file.find("t23z.short_range.channel") >1: #& file.find("t17z") >1 :
+        max_hour = "t23z"
+    elif file.find("t22z.short_range.channel") >1: #& file.find("t17z") >1 :
+        max_hour = "t22z"
+    elif file.find("t21z.short_range.channel") >1: #& file.find("t17z") >1 :
+        max_hour = "t21z"
+    elif  file.find("t20z.short_range.channel") >1: #& file.find("t17z") >1 :
+        max_hour = "t20z"
+    elif  file.find("t19z.short_range.channel") >1: #& file.find("t17z") >1 :
+        max_hour = "t19z"
+    elif  file.find("t18z.short_range.channel") >1: #& file.find("t17z") >1 :
+        max_hour = "t18z"
+    elif  file.find("t17z.short_range.channel") >1: #& file.find("t17z") >1 :
+        max_hour = "t17z"
+
+
+
+print(max_hour)
+
+for file in listFD(url, ext):
+    #print file
+    if file.find(max_hour+".short_range.channel") >1: #& file.find("t17z") >1 :
+        test_list.append(file)
+
+#print(test_list)
+count = 0
+for file in test_list:
+    count = count +1
+    test_url = str(test_list)
+    print(test_url)
+    print('/Users/icprbadmin/Documents/Python_Scripts/NWM/data/5_21_2019/test/'+str(date_today)+'test_data'+str(count)+'.nc')
+    wget.download(test_url, '/Users/icprbadmin/Documents/Python_Scripts/NWM/data/5_21_2019/test/'+str(date_today)+'test_data'+str(count)+'.nc')
+
+#url = 'https://www.ftp.ncep.noaa.gov/data/nccf/com/nwm/prod/nwm.20190521/short_range/nwm.t00z.short_range.channel_rt.f001.conus.nc'
+#wget.download(test_url, '/Users/icprbadmin/Documents/Python_Scripts/NWM/data/5_21_2019/test/test.nc')
+
 # 1
 #try:
 
-transport = Transport((host, port))
-transport.connect()
-sftp = SFTPClient.from_transport(transport)
-print("1 it's alive...sftp object up and running")
+# transport = Transport((host, port))
+# transport.connect()
+# sftp = SFTPClient.from_transport(transport)
+# print("1 it's alive...sftp object up and running")
 # except:
 #     print("1 failed to connect")
 
